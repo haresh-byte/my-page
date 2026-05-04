@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PMM 2-Week Sprint · May 4–14, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0d0d;--surf:#161616;--surf2:#1e1e1e;--bdr:#252525;
+  --text:#e0e0e0;--muted:#888;--dim:#555;
+  --orange:#f97316;--blue:#3b82f6;--purple:#a855f7;
+  --green:#22c55e;--yellow:#facc15;--red:#ef4444;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;
+  padding:28px 24px 80px;max-width:1100px;margin:0 auto;
+}
+h1,h2,h3{font-family:'Syne',sans-serif;line-height:1.2}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+/* ── TOP BAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--bdr)}
+.brand{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+  color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+.last-saved{font-size:11px;color:var(--dim);font-family:'IBM Plex Mono',monospace}
+
+/* ── HEADER ── */
+.header{display:flex;align-items:center;gap:28px;margin-bottom:20px;
+  padding:22px 26px;background:var(--surf);border:1px solid var(--bdr);border-radius:14px;flex-wrap:wrap}
+.ring-wrap{flex-shrink:0;position:relative;width:96px;height:96px}
+.ring-label{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.ring-score{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--orange)}
+.ring-sub{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:1px}
+.header-info{flex:1;min-width:200px}
+.sprint-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:3px}
+.sprint-dates{color:var(--muted);font-size:12px;margin-bottom:12px;font-family:'IBM Plex Mono',monospace}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:5px;background:var(--surf2);
+  border:1px solid var(--bdr);border-radius:6px;padding:4px 10px;font-size:11px}
+.chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.chip-n{font-family:'IBM Plex Mono',monospace;font-weight:500;color:#fff;font-size:11px}
+.chip-l{color:var(--muted)}
+
+/* ── TIMELINE ── */
+.timeline-wrap{margin-bottom:18px;padding:16px 22px;background:var(--surf);
+  border:1px solid var(--bdr);border-radius:14px}
+.tl-title{font-size:10px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--dim);margin-bottom:14px;font-weight:600}
+.tl-track{display:flex;align-items:flex-start;position:relative}
+.tl-line{position:absolute;top:11px;left:11px;right:11px;height:1px;background:var(--bdr);z-index:0}
+.tl-pts{display:flex;justify-content:space-between;width:100%;position:relative;z-index:1}
+.tpt{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
+.tpt-dot{width:22px;height:22px;border-radius:50%;background:var(--surf2);
+  border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;
+  font-size:10px;transition:all .2s;color:#fff}
+.tpt-dot:hover{border-color:#666}
+.tpt-dot.done{background:var(--green);border-color:var(--green)}
+.tpt-lbl{font-size:11px;color:var(--muted);font-weight:600}
+.tpt-dt{font-size:10px;color:var(--dim);font-family:'IBM Plex Mono',monospace}
+
+/* ── SECTION ── */
+.section{margin-bottom:16px;background:var(--surf);border:1px solid var(--bdr);
+  border-radius:14px;overflow:hidden;transition:box-shadow .2s}
+.section:hover{box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.sec-hdr{display:flex;align-items:center;gap:11px;padding:16px 20px;
+  cursor:pointer;user-select:none;border-bottom:1px solid var(--bdr);transition:background .15s}
+.sec-hdr:hover{background:var(--surf2)}
+.sec-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;font-size:15px;flex-shrink:0}
+.sec-ttl{font-size:14px;font-weight:700;color:#fff;flex:1}
+.sec-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.pill{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:3px 10px;
+  border-radius:20px;background:var(--surf2);border:1px solid var(--bdr);white-space:nowrap;color:var(--muted)}
+.pill.ok{color:var(--green);border-color:#22c55e55;background:#22c55e0d}
+.chev{color:var(--dim);font-size:11px;transition:transform .25s;flex-shrink:0}
+.chev.open{transform:rotate(180deg)}
+.pbar{height:2px;background:var(--bdr)}
+.pfill{height:100%;transition:width .5s cubic-bezier(.4,0,.2,1);border-radius:2px}
+.sec-body{padding:20px}
+
+/* ── MOFU TABLE ── */
+.mtbl{width:100%;border-collapse:collapse;font-size:12px}
+.mtbl th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--dim);font-weight:500;padding:0 10px 10px 0;border-bottom:1px solid var(--bdr)}
+.mtbl td{padding:10px 10px 10px 0;border-bottom:1px solid #1a1a1a;vertical-align:middle}
+.mtbl tr:last-child td{border-bottom:none}
+.mtbl tr.dimmed td:not(:last-child){opacity:.32}
+.ttl{font-weight:500;color:var(--text);line-height:1.4;font-size:12px}
+.rtag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;
+  font-weight:600;background:var(--surf2);border:1px solid var(--bdr);color:var(--muted)}
+.stgs{display:flex;gap:3px;flex-wrap:wrap}
+.sb{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:4px;
+  border:1px solid var(--bdr);background:var(--surf2);color:var(--muted);
+  font-size:10px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;line-height:1.6}
+.sb:hover:not(:disabled){border-color:#555;color:var(--text)}
+.sb.chk{background:transparent;color:var(--green);border-color:#22c55e55}
+.sb.live.chk{color:var(--orange);border-color:#f9731655;font-weight:600}
+.sb:disabled{cursor:default;pointer-events:none}
+.tog-wrap{display:flex;align-items:center;gap:5px;cursor:pointer}
+.tog{width:30px;height:16px;border-radius:8px;background:var(--bdr);
+  position:relative;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--orange)}
+.tog-th{position:absolute;top:2px;left:2px;width:12px;height:12px;
+  border-radius:50%;background:#fff;transition:left .2s}
+.tog.on .tog-th{left:16px}
+.tog-lbl{font-size:10px;color:var(--muted);transition:color .2s}
+.tog.on + .tog-lbl{color:var(--orange)}
+.mofu-alert{display:flex;align-items:center;gap:8px;padding:8px 12px;
+  background:#f9731610;border:1px solid #f9731625;border-radius:6px;
+  font-size:11px;color:var(--orange);margin-bottom:14px}
+.sel-count{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--orange);margin-left:auto}
+
+/* ── CASE STUDIES ── */
+.cs-rlbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--dim);font-weight:600;margin-bottom:8px;margin-top:14px}
+.cs-rlbl:first-child{margin-top:0}
+.cs-item{display:flex;align-items:center;gap:10px;padding:9px 13px;
+  background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;
+  margin-bottom:5px;flex-wrap:wrap;gap:8px}
+.cs-ttl{flex:1;font-size:12px;font-weight:500;min-width:130px}
+
+/* ── CHECKLIST ── */
+.cl-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #1a1a1a}
+.cl-item:last-child{border-bottom:none}
+.step-n{width:20px;height:20px;border-radius:50%;background:var(--surf2);
+  border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--dim);flex-shrink:0}
+.cbox{width:18px;height:18px;border-radius:4px;border:2px solid var(--bdr);
+  background:var(--surf2);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:10px;flex-shrink:0;transition:all .15s;color:#fff}
+.cbox:hover{border-color:#666}
+.cbox.done{background:var(--green);border-color:var(--green)}
+.cl-lbl{flex:1;font-size:12px;transition:all .2s}
+.cl-lbl.dk{color:var(--muted);text-decoration:line-through}
+
+/* ── NOTES ── */
+.ni{background:transparent;border:none;border-bottom:1px solid var(--bdr);
+  color:var(--muted);font-size:11px;font-family:'DM Sans',sans-serif;padding:3px 0;
+  flex:1;outline:none;transition:border-color .2s;width:100%}
+.ni:focus{border-color:var(--orange);color:var(--text)}
+.ni::placeholder{color:var(--dim)}
+.note-row{display:flex;gap:8px;align-items:center;margin-top:9px}
+.notes-section{margin-top:16px;padding-top:14px;border-top:1px solid #1e1e1e}
+.notes-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);margin-bottom:9px;font-weight:600}
+.note-item{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.note-key{font-size:11px;color:#666;width:160px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── ADHOC ── */
+.adhoc-add{display:flex;gap:7px;margin-bottom:12px}
+.ai{flex:1;background:var(--surf2);border:1px solid var(--bdr);border-radius:6px;
+  color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;padding:8px 12px;
+  outline:none;transition:border-color .2s}
+.ai:focus{border-color:var(--yellow)}
+.ai::placeholder{color:var(--dim)}
+.btn-add{background:var(--yellow);color:#000;border:none;border-radius:6px;
+  padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s}
+.btn-add:hover{background:#fbbf24}
+.adhoc-empty{color:var(--dim);font-size:12px;text-align:center;padding:16px}
+.rm-btn{color:#3a3a3a;font-size:11px;cursor:pointer;padding:2px 4px;
+  line-height:1;border-radius:3px;transition:all .15s;flex-shrink:0}
+.rm-btn:hover{color:var(--red);background:#ef444415}
+
+/* ── FOOTER ── */
+.footer{text-align:center;margin-top:36px;color:#3a3a3a;
+  font-size:10px;font-family:'IBM Plex Mono',monospace;padding-top:20px;
+  border-top:1px solid #1a1a1a}
+.footer span{color:var(--dim)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .header{gap:16px;padding:16px}
+  .sprint-title{font-size:18px}
+  .mtbl th:nth-child(3),.mtbl td:nth-child(3){display:none}
+  body{padding:16px 12px 60px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">Facilio PMM · Sprint Tracker</div>
+  <div class="last-saved" id="saved-ts">—</div>
+</div>
+
+<div id="app"></div>
+
+<div class="footer">
+  PMM 2-Week Sprint · May 4–14, 2026 &nbsp;·&nbsp;
+  <span>Progress auto-saves in this browser</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+const MOFU=[
+  {id:"m1",title:"Greenfield Pitch Blog",region:"Global",eta:"W1 End"},
+  {id:"m2",title:"SFG20 in Practice — UK FM PPM Schedules",region:"UK",eta:"W2 Mid"},
+  {id:"m3",title:"Phased CAFM Rollout — UK Enterprise",region:"UK",eta:"W2 Mid"},
+  {id:"m4",title:"FM Security Due Diligence — UK FE",region:"UK",eta:"W2 End"},
+  {id:"m5",title:"GDPR / UK GDPR — Estates Software",region:"UK",eta:"W2 End"},
+  {id:"m6",title:"UAE FM Operators — CAFM Reporting",region:"UAE",eta:"W2 End"},
+  {id:"m7",title:"Saudi School Groups — Vision 2030 FM",region:"KSA",eta:"W2 End"},
+];
+const MSTG=["Source Found","AI Draft","Edited","Live"];
+
+const CS_GRP=[
+  {region:"🇺🇸 US",items:[
+    {id:"cs1",title:"Trinity (masked)"},
+    {id:"cs2",title:"Metro Maintenance (masked)"},
+    {id:"cs3",title:"Incollab / Imperial / Publix"},
+  ]},
+  {region:"🇬🇧 UK",items:[
+    {id:"cs4",title:"Britishland (masked)"},
+    {id:"cs5",title:"Acorn Early Years / IEM"},
+  ]},
+  {region:"🌍 ME",items:[
+    {id:"cs6",title:"Musanadah (masked)"},
+  ]},
+];
+const CS_STG=["Setup","Copy","Fact-chk","Live"];
+
+const DB=[
+  {id:"db1",l:"Map stakeholders per region (US / UK / ME)"},
+  {id:"db2",l:"Send outreach to region stakeholders"},
+  {id:"db3",l:"Collect approval & readiness responses"},
+  {id:"db4",l:"Update sheet with logo readiness flags"},
+];
+
+const CMP=[
+  {id:"c1",l:"Review Santhoshi's Mutiny-based pages"},
+  {id:"c2",l:"Fact-check all claims & data points"},
+  {id:"c3",l:"Stabilise layout & copy"},
+  {id:"c4",l:"Publish pages live"},
+];
+
+const UPD=[
+  {id:"u1",l:"W1 Mid",d:"May 7"},
+  {id:"u2",l:"W1 End",d:"May 9"},
+  {id:"u3",l:"W2 Mid",d:"May 12"},
+  {id:"u4",l:"W2 End",d:"May 14"},
+];
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+const STORAGE_KEY="pmm-sprint-may2026";
+let S={msel:{},chk:{},cchk:{},dchk:{},cpchk:{},notes:{},adhoc:[],udone:{},col:{}};
+
+function load(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(raw) S={...S,...JSON.parse(raw)};
+  }catch(e){}
+  render();
+}
+
+function save(){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(S));
+    const now=new Date();
+    document.getElementById("saved-ts").textContent=
+      "Saved "+now.toLocaleDateString("en-GB",{day:"numeric",month:"short"})+" "+
+      now.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
+  }catch(e){}
+}
+
+// ══════════════════════════════════════════
+// SCORING
+// ══════════════════════════════════════════
+function mScore(){
+  const allLive=MOFU.filter(t=>S.chk[t.id+"-3"]).length;
+  return{done:Math.min(allLive,2),total:2,sel:MOFU.filter(t=>S.msel[t.id]).length,allLive};
+}
+function csScore(){
+  return{done:CS_GRP.flatMap(g=>g.items).filter(c=>S.cchk[c.id+"-3"]).length,total:5};
+}
+function dbScore(){return{done:S.dchk["db4"]?1:0,total:1}}
+function cmpScore(){return{done:S.cpchk["c4"]?1:0,total:1}}
+function overall(){
+  const m=mScore(),cs=csScore(),db=dbScore(),c=cmpScore();
+  return{done:m.done+cs.done+db.done+c.done,total:10};
+}
+
+// ══════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════
+function render(){
+  const ov=overall(),pct=ov.done/ov.total;
+  const r=41,circ=2*Math.PI*r,off=circ*(1-pct);
+  const m=mScore(),cs=csScore(),db=dbScore(),cmp=cmpScore();
+  const adhDone=S.adhoc.filter(a=>a.done).length;
+
+  document.getElementById("app").innerHTML=`
+<!-- HEADER -->
+<div class="header">
+  <div class="ring-wrap">
+    <svg width="96" height="96" viewBox="0 0 96 96">
+      <circle cx="48" cy="48" r="${r}" fill="none" stroke="#252525" stroke-width="6"/>
+      <circle cx="48" cy="48" r="${r}" fill="none" stroke="#f97316" stroke-width="6"
+        stroke-dasharray="${circ.toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}"
+        stroke-linecap="round" transform="rotate(-90 48 48)"
+        style="transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1)"/>
+    </svg>
+    <div class="ring-label">
+      <span class="ring-score">${ov.done}/${ov.total}</span>
+      <span class="ring-sub">done</span>
+    </div>
+  </div>
+  <div class="header-info">
+    <div class="sprint-title">PMM 2-Week Sprint</div>
+    <div class="sprint-dates">May 4 – 14, 2026 &nbsp;·&nbsp; 10 deliverables</div>
+    <div class="chips">
+      ${chip("#f97316",m.done,m.total,"Blogs Live")}
+      ${chip("#3b82f6",cs.done,cs.total,"Case Studies")}
+      ${chip("#a855f7",db.done,1,"DB Updated")}
+      ${chip("#22c55e",cmp.done,1,"Comparison Pg")}
+      ${chip("#facc15",adhDone,S.adhoc.length||0,"Ad Hoc")}
+    </div>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div class="timeline-wrap">
+  <div class="tl-title">Update Checkpoints — tap when shared with lead</div>
+  <div class="tl-track">
+    <div class="tl-line"></div>
+    <div class="tl-pts">
+      ${UPD.map(u=>`<div class="tpt" onclick="togUpd('${u.id}')">
+        <div class="tpt-dot ${S.udone[u.id]?'done':''}">${S.udone[u.id]?'✓':''}</div>
+        <div class="tpt-lbl">${u.l}</div>
+        <div class="tpt-dt">${u.d}</div>
+      </div>`).join('')}
+    </div>
+  </div>
+</div>
+
+${rMofu(m)}
+${rCs(cs)}
+${rDb(db)}
+${rCmp(cmp)}
+${rAdhoc()}
+`;
+}
+
+function chip(c,d,t,l){
+  return`<div class="chip">
+    <div class="chip-dot" style="background:${c}"></div>
+    <span class="chip-n">${d}/${t}</span>
+    <span class="chip-l">${l}</span>
+  </div>`;
+}
+
+/* ── MOFU ── */
+function rMofu(sc){
+  const col=S.col["mofu"];
+  const pct=sc.total?sc.done/sc.total*100:0;
+  return`<div class="section">
+  <div class="sec-hdr" onclick="togCol('mofu')">
+    <div class="sec-icon" style="background:#f9731618">✍️</div>
+    <div style="flex:1">
+      <div class="sec-ttl">MOFU Content Pieces</div>
+      <div class="sec-sub">2 topics live (3rd optional) · Source → AI Draft → Edit → Live</div>
+    </div>
+    <span class="pill ${sc.done>0?'ok':''}">${sc.done} / ${sc.total} live</span>
+    <span class="chev ${col?'':'open'}">▼</span>
+  </div>
+  <div class="pbar"><div class="pfill" style="width:${pct}%;background:#f97316"></div></div>
+  ${col?'':rMofuBody(sc)}
+</div>`;
+}
+
+function rMofuBody(sc){
+  const selTopics=MOFU.filter(t=>S.msel[t.id]);
+  return`<div class="sec-body">
+  <div class="mofu-alert">
+    ℹ️&nbsp; Toggle to mark your active topics. Target: <strong>2 live</strong> — 3rd is optional. All stage buttons are always clickable.
+    <span class="sel-count">${sc.sel} active</span>
+  </div>
+  <table class="mtbl">
+    <thead><tr>
+      <th style="width:33%">Topic</th>
+      <th style="width:8%">Region</th>
+      <th style="width:8%">ETA</th>
+      <th style="width:37%">Progress Stages</th>
+      <th style="width:10%">Select</th>
+    </tr></thead>
+    <tbody>
+      ${MOFU.map(t=>{
+        const isSel=!!S.msel[t.id];
+        return`<tr class="${isSel?'':'dimmed'}">
+          <td><div class="ttl">${t.title}</div></td>
+          <td><span class="rtag">${t.region}</span></td>
+          <td class="mono" style="font-size:10px;color:#888">${t.eta}</td>
+          <td>
+            <div class="stgs">
+              ${MSTG.map((s,i)=>{
+                const ck=!!S.chk[t.id+'-'+i];
+                return`<button class="sb ${ck?'chk':''} ${s==='Live'?'live':''}"
+                  onclick="togChk('${t.id}',${i})">
+                  <span>${ck?'✓':'○'}</span>${s}
+                </button>`;
+              }).join('')}
+            </div>
+          </td>
+          <td>
+            <div class="tog-wrap" onclick="togSel('${t.id}')">
+              <div class="tog ${isSel?'on':''}"><div class="tog-th"></div></div>
+              <span class="tog-lbl">${isSel?'Active':'Pick'}</span>
+            </div>
+          </td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>
+  ${selTopics.length?`
+  <div class="notes-section">
+    <div class="notes-lbl">Delay / Actual Notes</div>
+    ${selTopics.map(t=>`
+    <div class="note-item">
+      <span class="note-key" title="${t.title}">${t.title.length>24?t.title.substring(0,24)+'…':t.title}</span>
+      <input class="ni" placeholder="Add delay reason or actual status…"
+        value="${escHtml(S.notes[t.id]||'')}"
+        oninput="updNote('${t.id}',this.value)"/>
+    </div>`).join('')}
+  </div>`:''}
+</div>`;
+}
+
+/* ── CASE STUDIES ── */
+function rCs(sc){
+  const col=S.col["cs"];
+  return`<div class="section">
+  <div class="sec-hdr" onclick="togCol('cs')">
+    <div class="sec-icon" style="background:#3b82f618">📄</div>
+    <div style="flex:1">
+      <div class="sec-ttl">Case Study Pages</div>
+      <div class="sec-sub">US · UK · ME — target 5 pages live</div>
+    </div>
+    <span class="pill ${sc.done>=5?'ok':''}">${sc.done} / ${sc.total} live</span>
+    <span class="chev ${col?'':'open'}">▼</span>
+  </div>
+  <div class="pbar"><div class="pfill" style="width:${sc.done/sc.total*100}%;background:#3b82f6"></div></div>
+  ${col?'':rCsBody()}
+</div>`;
+}
+
+function rCsBody(){
+  return`<div class="sec-body">
+    ${CS_GRP.map(g=>`
+    <div class="cs-rlbl">${g.region}</div>
+    ${g.items.map(cs=>`
+      <div class="cs-item">
+        <div class="cs-ttl">${cs.title}</div>
+        <div class="stgs">
+          ${CS_STG.map((s,i)=>{
+            const ck=!!S.cchk[cs.id+'-'+i];
+            return`<button class="sb ${ck?'chk':''} ${s==='Live'?'live':''}"
+              onclick="togCs('${cs.id}',${i})">
+              <span>${ck?'✓':'○'}</span>${s}
+            </button>`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="note-row" style="margin-bottom:8px">
+        <input class="ni" placeholder="Delay / actual note…"
+          value="${escHtml(S.notes[cs.id]||'')}"
+          oninput="updNote('${cs.id}',this.value)"/>
+      </div>
+    `).join('')}`).join('')}
+  </div>`;
+}
+
+/* ── CUSTOMER DB ── */
+function rDb(sc){
+  const col=S.col["db"];
+  const done=DB.filter(s=>S.dchk[s.id]).length;
+  return`<div class="section">
+  <div class="sec-hdr" onclick="togCol('db')">
+    <div class="sec-icon" style="background:#a855f718">🗂️</div>
+    <div style="flex:1">
+      <div class="sec-ttl">Customer Database Sheet Update</div>
+      <div class="sec-sub">Stakeholder collaboration — logo approvals & readiness</div>
+    </div>
+    <span class="pill ${sc.done?'ok':''}">${done} / ${DB.length} steps</span>
+    <span class="chev ${col?'':'open'}">▼</span>
+  </div>
+  <div class="pbar"><div class="pfill" style="width:${done/DB.length*100}%;background:#a855f7"></div></div>
+  ${col?'':rDbBody()}
+</div>`;
+}
+
+function rDbBody(){
+  return`<div class="sec-body">
+    ${DB.map((s,i)=>`<div class="cl-item">
+      <div class="step-n">${i+1}</div>
+      <div class="cbox ${S.dchk[s.id]?'done':''}" onclick="togDb('${s.id}')">${S.dchk[s.id]?'✓':''}</div>
+      <div class="cl-lbl ${S.dchk[s.id]?'dk':''}">${s.l}</div>
+    </div>`).join('')}
+    <div class="note-row">
+      <input class="ni" placeholder="Overall collaboration note or blocker…"
+        value="${escHtml(S.notes['db-all']||'')}"
+        oninput="updNote('db-all',this.value)"/>
+    </div>
+  </div>`;
+}
+
+/* ── COMPARISON PAGES ── */
+function rCmp(sc){
+  const col=S.col["cmp"];
+  const done=CMP.filter(s=>S.cpchk[s.id]).length;
+  return`<div class="section">
+  <div class="sec-hdr" onclick="togCol('cmp')">
+    <div class="sec-icon" style="background:#22c55e18">🔗</div>
+    <div style="flex:1">
+      <div class="sec-ttl">Comparison Pages (Santhoshi)</div>
+      <div class="sec-sub">Stabilise, fact-check and publish live</div>
+    </div>
+    <span class="pill ${sc.done?'ok':''}">${done} / ${CMP.length} steps</span>
+    <span class="chev ${col?'':'open'}">▼</span>
+  </div>
+  <div class="pbar"><div class="pfill" style="width:${done/CMP.length*100}%;background:#22c55e"></div></div>
+  ${col?'':rCmpBody()}
+</div>`;
+}
+
+function rCmpBody(){
+  return`<div class="sec-body">
+    ${CMP.map((s,i)=>`<div class="cl-item">
+      <div class="step-n">${i+1}</div>
+      <div class="cbox ${S.cpchk[s.id]?'done':''}" onclick="togCmp('${s.id}')">${S.cpchk[s.id]?'✓':''}</div>
+      <div class="cl-lbl ${S.cpchk[s.id]?'dk':''}">${s.l}</div>
+    </div>`).join('')}
+    <div class="note-row">
+      <input class="ni" placeholder="Delay or actual status note…"
+        value="${escHtml(S.notes['cmp-all']||'')}"
+        oninput="updNote('cmp-all',this.value)"/>
+    </div>
+  </div>`;
+}
+
+/* ── AD HOC ── */
+function rAdhoc(){
+  const col=S.col["adhoc"];
+  const done=S.adhoc.filter(a=>a.done).length;
+  return`<div class="section">
+  <div class="sec-hdr" onclick="togCol('adhoc')">
+    <div class="sec-icon" style="background:#facc1518">🔔</div>
+    <div style="flex:1">
+      <div class="sec-ttl">Ad Hoc Sales Enablement</div>
+      <div class="sec-sub">Reactive — add requests as they come in</div>
+    </div>
+    <span class="pill ${done>0?'ok':''}">${done} / ${S.adhoc.length} done</span>
+    <span class="chev ${col?'':'open'}">▼</span>
+  </div>
+  <div class="pbar"><div class="pfill" style="width:${S.adhoc.length?done/S.adhoc.length*100:0}%;background:#facc15"></div></div>
+  ${col?'':rAdhocBody()}
+</div>`;
+}
+
+function rAdhocBody(){
+  return`<div class="sec-body">
+    <div class="adhoc-add">
+      <input class="ai" id="ai-inp"
+        placeholder="Add request… e.g. Battlecard for EMEA deal"
+        onkeydown="if(event.key==='Enter')addAh()"/>
+      <button class="btn-add" onclick="addAh()">+ Add</button>
+    </div>
+    ${S.adhoc.length===0
+      ?'<div class="adhoc-empty">No requests yet. Add them as they arrive.</div>'
+      :S.adhoc.map((a,i)=>`<div class="cl-item">
+          <div class="step-n mono">${i+1}</div>
+          <div class="cbox ${a.done?'done':''}" onclick="togAh(${i})">${a.done?'✓':''}</div>
+          <div class="cl-lbl ${a.done?'dk':''}">${escHtml(a.title)}</div>
+          <span class="rm-btn" onclick="rmAh(${i})" title="Remove">✕</span>
+        </div>`).join('')}
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════
+// EVENT HANDLERS
+// ══════════════════════════════════════════
+function togSel(id){S.msel[id]=!S.msel[id];save();render()}
+function togChk(id,i){S.chk[id+'-'+i]=!S.chk[id+'-'+i];save();render()}
+function togCs(id,i){S.cchk[id+'-'+i]=!S.cchk[id+'-'+i];save();render()}
+function togDb(id){S.dchk[id]=!S.dchk[id];save();render()}
+function togCmp(id){S.cpchk[id]=!S.cpchk[id];save();render()}
+function togUpd(id){S.udone[id]=!S.udone[id];save();render()}
+function togCol(id){S.col[id]=!S.col[id];save();render()}
+function updNote(id,v){S.notes[id]=v;save()}
+function addAh(){
+  const inp=document.getElementById("ai-inp");
+  if(!inp||!inp.value.trim())return;
+  S.adhoc.push({id:"ah"+Date.now(),title:inp.value.trim(),done:false});
+  save();render();
+}
+function rmAh(i){if(confirm("Remove this item?"))S.adhoc.splice(i,1);save();render()}
+function togAh(i){S.adhoc[i].done=!S.adhoc[i].done;save();render()}
+
+// ══════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════
+load();
+</script>
+</body>
+</html>
